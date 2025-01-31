@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="orangeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFE169"/>
+      <stop offset="25%" style="stop-color:#FFA351"/>
+      <stop offset="50%" style="stop-color:#FF6B6B"/>
+      <stop offset="75%" style="stop-color:#FF8B8B"/>
+      <stop offset="100%" style="stop-color:#BFA2DB"/>
+    </linearGradient>
+    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4B6BFB"/>
+      <stop offset="100%" style="stop-color:#4B6BFB"/>
+    </linearGradient>
+  </defs>
+
+  <!-- V shape -->
+  <path d="M100,100 
+           L400,900 
+           L700,100 
+           L600,100
+           L400,600
+           L200,100 
+           Z" 
+        fill="url(#blueGradient)"
+        stroke="none"/>
+  
+  <!-- Right diagonal line -->
+  <path d="M600,100 
+           L900,900
+           L800,900
+           L500,100
+           Z" 
+        fill="url(#orangeGradient)"
+        stroke="none"/>
+</svg>
