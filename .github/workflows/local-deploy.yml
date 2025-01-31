@@ -2,36 +2,50 @@ name: Deploy React App
 
 on:
   push:
-    branches: [ master ]  # or your default branch name
-  workflow_dispatch:    # allows manual trigger
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   deploy:
-    runs-on: self-hosted  # This uses your newly configured runner
+    runs-on: self-hosted
     
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Fetches all history for all branches and tags
+          fetch-depth: 0
       
-      - name: Update and build application
+      - name: Setup Node environment
         run: |
-          # Navigate to your React app directory - MODIFY THIS PATH
-          cd /home/karan-connect/ml-loader
+          echo "Node version:"
+          node -v
+          echo "NPM version:"
+          npm -v
           
-          # Fetch latest changes
-          git fetch origin
-          
-          # Reset to match remote branch
-          git reset --hard origin/master
-          
-          # Install dependencies
-          npm install
-          
-          # Build the application
-          #npm run build
-
-      - name: Check deployment status
+          # Clean existing setup
+          rm -rf node_modules package-lock.json
+      
+      - name: Install all dependencies
         run: |
-          echo "Deployment completed"
-          npm list
+          cd /home/karan-connect/actions-runner/_work/VAC/VAC
+          # First try with clean install
+          npm ci || npm install --production=false --legacy-peer-deps
+        
+      - name: Verify installation
+        run: |
+          cd /home/karan-connect/actions-runner/_work/VAC/VAC
+          echo "Checking node_modules:"
+          ls -la node_modules
+          echo "Installed dependencies:"
+          npm list --depth=0
+          
+      - name: Build application
+        run: |
+          cd /home/karan-connect/actions-runner/_work/VAC/VAC
+          export NODE_OPTIONS=--max_old_space_size=4096
+          CI=false npm run build
+        
+      - name: Show Error Logs if Failed
+        if: failure()
+        run: |
+          echo "Latest NPM log:"
+          cat $(ls -t /home/karan-connect/.npm/_logs/*.log | head -1)
