@@ -1,40 +1,29 @@
-name: Deploy React App
+name: Sync React Dev Environment
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master ]  # or your default branch
   workflow_dispatch:
 
 jobs:
-  deploy:
-    runs-on: self-hosted  # This runs on your server directly
+  sync:
+    runs-on: self-hosted
     
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      
-      - name: Install dependencies and build
+      - name: Pull latest changes
         run: |
-          # Print working directory for verification
-          pwd
-          echo "Current directory contents:"
-          ls -la
+          cd /home/karan-connect/ml-loader  # Update this to your React app directory
+          git pull origin master
           
-          # Install dependencies
-          npm ci || npm install --production=false --legacy-peer-deps
-          
-          # Build the application
-          export NODE_OPTIONS=--max_old_space_size=4096
-          CI=false npm run build
-          
-      - name: Verify build
+      - name: Update dependencies
         run: |
-          echo "Build directory contents:"
-          ls -la build/
-          
-      - name: Show Error Logs if Failed
-        if: failure()
+          cd /home/karan-connect/ml-loader # Update this to your React app directory
+          npm install
+
+      - name: Verify sync
         run: |
-          echo "Latest NPM log:"
-          cat $(ls -t /home/karan-connect/.npm/_logs/*.log | head -1)
+          cd /home/karan-connect/VAC
+          echo "Current git commit:"
+          git rev-parse HEAD
+          echo "Dependencies installed:"
+          npm list --depth=0
