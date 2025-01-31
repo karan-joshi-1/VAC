@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import logo from './assets/logo-wl.png';
 import { Settings } from 'lucide-react';
 
-const App = () => {
+const  = () => {
   const [formData, setFormData] = useState({
     // Git Parameters
     repoLocation: '',
