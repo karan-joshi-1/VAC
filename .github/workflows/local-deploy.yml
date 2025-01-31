@@ -1,4 +1,4 @@
-name: Deploy to Local Red Hat
+name: Deploy React App
 
 on:
   push:
@@ -7,29 +7,31 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # This uses your newly configured runner
     
     steps:
-      - name: Deploy to Red Hat Linux
-        uses: appleboy/ssh-action@master
+      - uses: actions/checkout@v3
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            # Navigate to your React app directory
-            cd /home/karan-connect/ml-loader  # MODIFY THIS PATH
-            
-            # Pull latest changes
-            git pull origin master  # or your branch name
-            
-            # Install dependencies
-            npm install
-            
-            # Optional: Build the app
-            #npm run build
-            
-            # Optional: Restart the development server
-            # If you're using npm start in a screen/tmux session:
-            # pkill -f "node.*start"
-            # npm start &
+          fetch-depth: 0  # Fetches all history for all branches and tags
+      
+      - name: Update and build application
+        run: |
+          # Navigate to your React app directory - MODIFY THIS PATH
+          cd /home/karan-connect/ml-loader
+          
+          # Fetch latest changes
+          git fetch origin
+          
+          # Reset to match remote branch
+          git reset --hard origin/master
+          
+          # Install dependencies
+          #npm install
+          
+          # Build the application
+          #npm run build
+
+      - name: Check deployment status
+        run: |
+          echo "Deployment completed"
+          npm list
