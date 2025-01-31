@@ -2,7 +2,7 @@ name: Sync React Dev Environment
 
 on:
   push:
-    branches: [ master ]  # or your default branch
+    branches: [ master ]
   workflow_dispatch:
 
 jobs:
@@ -10,20 +10,28 @@ jobs:
     runs-on: self-hosted
     
     steps:
-      - name: Pull latest changes
-        run: |
-          cd /home/karan-connect/ml-loader  # Update this to your React app directory
-          git pull origin master
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
           
-      - name: Update dependencies
+      - name: Install dependencies in Actions workspace
         run: |
-          cd /home/karan-connect/ml-loader # Update this to your React app directory
+          cd /home/karan-connect/actions-runner/_work/VAC/VAC
+          npm install
+          
+      - name: Sync with development directory
+        run: |
+          # Create ml-loader directory if it doesn't exist
+          mkdir -p /home/karan-connect/ml-loader
+          
+          # Copy all files except node_modules
+          rsync -av --exclude='node_modules' /home/karan-connect/actions-runner/_work/VAC/VAC/ /home/karan-connect/ml-loader/
+          
+          # Install dependencies in the dev directory
+          cd /home/karan-connect/ml-loader
           npm install
 
       - name: Verify sync
         run: |
-          cd /home/karan-connect/VAC
-          echo "Current git commit:"
-          git rev-parse HEAD
-          echo "Dependencies installed:"
-          npm list --depth=0
+          echo "Development directory contents:"
+          ls -la /home/karan-connect/ml-loader
