@@ -1,0 +1,35 @@
+name: Deploy to Local Red Hat
+
+on:
+  push:
+    branches: [ master ]  # or your default branch name
+  workflow_dispatch:    # allows manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy to Red Hat Linux
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Navigate to your React app directory
+            cd /home/karan-connect/ml-loader  # MODIFY THIS PATH
+            
+            # Pull latest changes
+            git pull origin master  # or your branch name
+            
+            # Install dependencies
+            npm install
+            
+            # Optional: Build the app
+            #npm run build
+            
+            # Optional: Restart the development server
+            # If you're using npm start in a screen/tmux session:
+            # pkill -f "node.*start"
+            # npm start &
