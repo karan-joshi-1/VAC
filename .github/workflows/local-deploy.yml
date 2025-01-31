@@ -2,48 +2,37 @@ name: Deploy React App
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   workflow_dispatch:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: self-hosted  # This runs on your server directly
     
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       
-      - name: Setup Node environment
+      - name: Install dependencies and build
         run: |
-          echo "Node version:"
-          node -v
-          echo "NPM version:"
-          npm -v
+          # Print working directory for verification
+          pwd
+          echo "Current directory contents:"
+          ls -la
           
-          # Clean existing setup
-          rm -rf node_modules package-lock.json
-      
-      - name: Install all dependencies
-        run: |
-          cd /home/karan-connect/actions-runner/_work/VAC/VAC
-          # First try with clean install
+          # Install dependencies
           npm ci || npm install --production=false --legacy-peer-deps
-        
-      - name: Verify installation
-        run: |
-          cd /home/karan-connect/actions-runner/_work/VAC/VAC
-          echo "Checking node_modules:"
-          ls -la node_modules
-          echo "Installed dependencies:"
-          npm list --depth=0
           
-      - name: Build application
-        run: |
-          cd /home/karan-connect/actions-runner/_work/VAC/VAC
+          # Build the application
           export NODE_OPTIONS=--max_old_space_size=4096
           CI=false npm run build
-        
+          
+      - name: Verify build
+        run: |
+          echo "Build directory contents:"
+          ls -la build/
+          
       - name: Show Error Logs if Failed
         if: failure()
         run: |
