@@ -104,7 +104,8 @@ const App = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`${getServerUrl()}/api/2.0/mlflow/runs/get?run_id=${runId}`);
+      // Use the local API proxy instead of direct MLflow access
+      const response = await fetch(`/api/mlflow/runs/get?run_id=${runId}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -119,7 +120,7 @@ const App = () => {
       const mlflowParams = data.run.data.params;
       const parsedParams = parseMLflowParams(mlflowParams);
       
-      // Separate known and additional parameters
+      // Rest of the function remains the same
       const updatedFormData = { ...formData };
       const additionalParamsData = {};
 
