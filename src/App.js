@@ -309,7 +309,7 @@ const App = () => {
                       Open MLflow Server UI ↗
                     </a>
                     <span className="text-sm text-gray-400">
-                      Current server: {getServerConfig().ip}:{getServerConfig().port}
+                      Current server: {serverConfig.ip}:{serverConfig.port}
                     </span>
                   </div>
                 </div>
