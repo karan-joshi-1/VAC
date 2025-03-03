@@ -80,18 +80,27 @@ const App = () => {
 
   const parseMLflowParams = (params) => {
     const parsedParams = {};
+    
+    // First, handle all parameters as-is
+    params.forEach(param => {
+      parsedParams[param.key] = param.value;
+    });
+    
+    // Then try to parse JSON for specific keys
     params.forEach(param => {
       if (param.key === 'gitParams' || param.key === 'modelParams') {
         try {
-          const jsonParams = JSON.parse(param.value.replace(/'/g, '"'));
-          Object.assign(parsedParams, jsonParams);
+          const jsonValue = param.value.replace(/'/g, '"');
+          const parsed = JSON.parse(jsonValue);
+          // Only merge if parsing was successful
+          Object.assign(parsedParams, parsed);
         } catch (err) {
-          console.error(`Error parsing ${param.key}:`, err);
+          console.warn(`Could not parse JSON for ${param.key}: ${err.message}`);
+          // Keep the original string value
         }
-      } else {
-        parsedParams[param.key] = param.value;
       }
     });
+    
     return parsedParams;
   };
 
@@ -104,20 +113,30 @@ const App = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`${getServerUrl()}/api/2.0/mlflow/runs/get?run_id=${runId}`);
+      const trimmedRunId = runId.trim();
+      console.log(`Fetching from: ${getServerUrl()}/api/2.0/mlflow/runs/get?run_id=${trimmedRunId}`);
+      
+      const response = await fetch(`${getServerUrl()}/api/2.0/mlflow/runs/get?run_id=${trimmedRunId}`);
+      
+      console.log('Response status:', response.status);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
+      console.log('Received data:', data);
       
       if (!data?.run?.data?.params) {
+        console.error('Invalid data structure:', data);
         throw new Error('Unexpected response structure from MLflow');
       }
       
       const mlflowParams = data.run.data.params;
+      console.log('MLflow params:', mlflowParams);
+      
       const parsedParams = parseMLflowParams(mlflowParams);
+      console.log('Parsed params:', parsedParams);
       
       // Separate known and additional parameters
       const updatedFormData = { ...formData };
@@ -134,6 +153,7 @@ const App = () => {
       setFormData(updatedFormData);
       setAdditionalParams(additionalParamsData);
     } catch (err) {
+      console.error('Error details:', err);
       setError(`Failed to fetch MLflow parameters: ${err.message}`);
     } finally {
       setLoading(false);
