@@ -5,12 +5,17 @@ module.exports = function(app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'http://10.220.115.68:5000',
+      // The target will be overridden by the fetch call which now uses the full URL
+      target: 'http://localhost:5000',
       changeOrigin: true,
       secure: false,
       logLevel: 'debug',
-      onProxyRes: (proxyRes, req, res) => {
-        console.log(`[Proxy] ${req.method} ${req.url} => ${proxyRes.statusCode}`);
+      onError: (err, req, res) => {
+        console.error('Proxy error:', err);
+        res.writeHead(500, {
+          'Content-Type': 'text/plain',
+        });
+        res.end('Proxy error: Could not connect to MLflow server');
       }
     })
   );

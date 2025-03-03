@@ -115,10 +115,19 @@ const App = () => {
     setError('');
     try {
       const trimmedRunId = runId.trim();
-      console.log(`Fetching from: /api/2.0/mlflow/runs/get?run_id=${trimmedRunId}`);
+      const apiUrl = `http://${serverConfig.ip}:${serverConfig.port}/api/2.0/mlflow/runs/get?run_id=${trimmedRunId}`;
+      console.log(`Fetching from: ${apiUrl}`);
       
-      // Use relative URL which will be proxied
-      const response = await fetch(`/api/2.0/mlflow/runs/get?run_id=${trimmedRunId}`);
+      // Use the full URL with server config instead of relative URL
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        // Add CORS mode
+        mode: 'cors'
+      });
       
       console.log('Response status:', response.status);
       
