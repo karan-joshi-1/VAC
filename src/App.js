@@ -75,6 +75,7 @@ const App = () => {
   };
 
   const getServerUrl = () => {
+    // For UI display purposes only, not used for API calls
     return `http://${serverConfig.ip}:${serverConfig.port}`;
   };
 
@@ -114,9 +115,10 @@ const App = () => {
     setError('');
     try {
       const trimmedRunId = runId.trim();
-      console.log(`Fetching from: ${getServerUrl()}/api/2.0/mlflow/runs/get?run_id=${trimmedRunId}`);
+      console.log(`Fetching from: /api/2.0/mlflow/runs/get?run_id=${trimmedRunId}`);
       
-      const response = await fetch(`${getServerUrl()}/api/2.0/mlflow/runs/get?run_id=${trimmedRunId}`);
+      // Use relative URL which will be proxied
+      const response = await fetch(`/api/2.0/mlflow/runs/get?run_id=${trimmedRunId}`);
       
       console.log('Response status:', response.status);
       
@@ -307,7 +309,7 @@ const App = () => {
                       Open MLflow Server UI ↗
                     </a>
                     <span className="text-sm text-gray-400">
-                      Current server: {getServerUrl()}
+                      Current server: {getServerConfig().ip}:{getServerConfig().port}
                     </span>
                   </div>
                 </div>
