@@ -42,7 +42,7 @@ const App = () => {
   const [error, setError] = useState('');
   const [title, setTitle] = useState('VMES: Vac ML Experimental System');
   const [serverConfig, setServerConfig] = useState({
-    ip: '10.220.115.68',
+    ip: '10.220.120.17',
     port: '5000'
   });
   const [showServerConfig, setShowServerConfig] = useState(false);
